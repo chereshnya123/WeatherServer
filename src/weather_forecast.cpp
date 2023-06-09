@@ -45,18 +45,6 @@ int GetIndexOfFirstNumber(const std::string& text, const int begin, const int en
     return -1;
 }
 
-int GetIndexAfterTag (const std::string& text, const int begin, const int end) {
-    for (int i = begin; i < end; ++i) {
-        if (isdigit(text[i])) {
-            return i;
-        }
-            
-    }
-
-    throw -1;
-    return -1;
-}
-
 std::optional<std::string> ParseValueFromHTML(const std::string& text, const std::string& tag) {
     int left = text.find(tag) + tag.size() + 1;
     int right = left + kValueSize;
