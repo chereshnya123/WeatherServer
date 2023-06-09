@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/weather_server.dir/server/server.cpp.o -o weather_server  -Wl,-rpath,/usr/local/lib /usr/local/lib/libcpr.so.1.11.0 -lfastcgipp /usr/local/lib/libsoci_postgresql.so.4.1.0 /usr/lib/x86_64-linux-gnu/libcurl.so /usr/local/lib/libsoci_core.so.4.1.0 /usr/lib/x86_64-linux-gnu/libdl.a /usr/lib/x86_64-linux-gnu/libpq.so 

@@ -1,0 +1,3 @@
+/home/chereshnya/Me/nginx_test/backend/build/CMakeFiles/weather_server.dir
+/home/chereshnya/Me/nginx_test/backend/build/CMakeFiles/edit_cache.dir
+/home/chereshnya/Me/nginx_test/backend/build/CMakeFiles/rebuild_cache.dir
