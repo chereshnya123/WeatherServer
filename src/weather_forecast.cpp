@@ -8,7 +8,11 @@
 #include <sstream>
 #include <string>
 #include <optional>
+#include <sstream>
+
 #include <gumbo.h>
+
+#include <src/helpers/date.cpp>
 
 // To-Parse list:
 // temp ------------------- OK
@@ -139,6 +143,8 @@ std::ostream&  operator<< (std::ostream& out, const WeatherCast& weather_cast) {
         return out;
 }
 
+
+
 WeatherCast ParseWeatherForecast(const std::string& text) {
     WeatherCast weather_forecast;
 
@@ -148,9 +154,7 @@ WeatherCast ParseWeatherForecast(const std::string& text) {
     weather_forecast.wind_speed = ParseWindSpeed(text);
     weather_forecast.humidity = 56; // Заглушка 
 
-    auto now = std::chrono::system_clock::now();
-    std::time_t end_time = std::chrono::system_clock::to_time_t(now);
-    weather_forecast.date = static_cast<std::string>(std::ctime(&end_time));
+    weather_forecast.date = Helpers::GetTodayDate();
 
     return weather_forecast;
 }

@@ -8,12 +8,6 @@
 #include <src/db_working.cpp>
 #include <src/weather_forecast.cpp>
 
-std::string GetCurrentDate() {
-    auto now = std::chrono::system_clock::now();
-    std::time_t end_time = std::chrono::system_clock::to_time_t(now);
-    return static_cast<std::string>(std::ctime(&end_time));
-
-}
 
 class HelloWorld: public Fastcgipp::Request<wchar_t>
 {
