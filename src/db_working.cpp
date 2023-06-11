@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <soci/session.h>
 #include <soci/soci-backend.h>
 #include <soci/soci.h>
@@ -8,6 +7,7 @@
 
 #include <src/weather_forecast.cpp>
 #include <src/helpers/date.cpp>
+#include <logging/log.cpp>
 
 #include <iostream>
 
@@ -33,7 +33,9 @@ weather::WeatherCast FetchOne(soci::session& sql, const std::string city = "lond
     weather::WeatherCast weather;
     sql << "SELECT date, humidity, state, wind_speed, temperature FROM " << city 
         << " WHERE date = '" << Helpers::GetTodayDate() << "';", soci::into(weather.date), soci::into(weather.humidity), soci::into(weather.weather_state), soci::into(weather.wind_speed), soci::into(weather.temperature);    
-    std::cout << "Successfuly fetched one record\n";
+    std::cout << "Successfuly fetched one record" << std::endl;
+    LOG.Info() << "Successfuly fetched one record";
+    
 
     return weather;
 

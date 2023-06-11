@@ -25,11 +25,13 @@ class HelloWorld: public Fastcgipp::Request<wchar_t>
 
 
         if (sql.got_data()) {
+            LOG.Info() << "Today weather is already in DB";
             std::cout << "Today weather is already in DB" << std::endl;
             weather = weather_fetched;
         } else {
             weather = weather::GetTodayWeatherForecast();
             InsertWeather(weather.city, weather.date, weather.humidity, weather.weather_state, weather.wind_speed, weather.temperature, sql);
+            LOG.Info() << "Successfuly put weather in DB";
             std::cout << "Successfuly put weather in DB" << std::endl;
         }
 

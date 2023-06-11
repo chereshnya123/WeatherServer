@@ -13,6 +13,7 @@
 #include <gumbo.h>
 
 #include <src/helpers/date.cpp>
+#include <logging/log.cpp>
 
 // To-Parse list:
 // temp ------------------- OK
@@ -64,29 +65,36 @@ std::optional<std::string> ParseValueFromHTML(const std::string& text, const std
 }
 
 int ParseTemperature(const std::string& text) {
+    LOG.Info() << "Parsing temperature...\n";
     std::cout << "Parsing temperature...\n";
     const auto& parsed_temperature = ParseValueFromHTML(text, kCurrentTemperaturePattern);
 
     if (!parsed_temperature.has_value()) {
+        LOG.Error() << "ERROR: Can't parse temperature, return default: 100\n";
         std::cout << "ERROR: Can't parse temperature, return default: 100\n";
         return 100;
     }
 
     const auto& temperature = std::stoi(parsed_temperature.value());
+    LOG.Info() << "Temperature parsed successfuly\n";
     std::cout << "Temperature parsed successfuly\n";
     return temperature;
 }
 
 double ParseWindSpeed(const std::string& text) { // std::optional
+
     std::cout << "Parsing wind speed";
+    LOG.Info() << "Parsing wind speed";
     const auto& parsed_wind_speed = ParseValueFromHTML(text, kWindSpeedPattern);
 
     if (!parsed_wind_speed.has_value()) {
+        LOG.Error() << "ERROR: can't parse wind speed, return default: 0\n";
         std::cout << "ERROR: can't parse wind speed, return default: 0\n";
         return 0;
     }
 
     const auto& wind_speed = std::stod(parsed_wind_speed.value());
+    LOG.Info() << "Wind speed parsed successfuly\n";
     std::cout << "Wind speed parsed successfuly\n";
     return wind_speed;
 }
@@ -149,6 +157,7 @@ WeatherCast ParseWeatherForecast(const std::string& text) {
     WeatherCast weather_forecast;
 
     std::cout << "Parsing weather forecast...\n";
+    LOG.Info() << "Parsing weather forecast...\n";
     weather_forecast.temperature = ParseTemperature(text);
     weather_forecast.city = "london";
     weather_forecast.wind_speed = ParseWindSpeed(text);
@@ -160,7 +169,6 @@ WeatherCast ParseWeatherForecast(const std::string& text) {
 }
 
 WeatherCast GetTodayWeatherForecast(std::string city = "london") {
-    std::cout << "In func\n";
     cpr::Response r = cpr::Get(cpr::Url{"https://yandex.ru/pogoda/" + city},
                       cpr::Parameters{{"Content-Type", kContentType}, {"Accept", kAccept},
                       {"Accept-Encoding", "identity"},
@@ -168,6 +176,7 @@ WeatherCast GetTodayWeatherForecast(std::string city = "london") {
     // r.status_code;                  // 200 Оформить в логи
     // r.header["content-type"];       // application/json; charset=utf-8
     std::cout << "Got response" << std::endl;
+    LOG.Info() << "Got response" << std::endl;
     std::transform(city.begin(), city.end(), city.begin(), tolower);
     WeatherCast weather_forecast;
 
@@ -175,6 +184,7 @@ WeatherCast GetTodayWeatherForecast(std::string city = "london") {
     weather_forecast.city = city;
     // WeatherCast weather_cast{city, "04.06.2023", today_temperature};
     std::cout << "Returend weather" << std::endl;
+    LOG.Info() << "Returend weather" << std::endl;
     return weather_forecast;
 }
 
