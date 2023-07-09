@@ -22,7 +22,11 @@
 // humidity ----------------- OK
 // wind_speed --------------------- OK
 
+static auto& LOG = Logger::GetLogger();
+
 namespace {
+
+
 
 const std::string kContentType{"text/html; charset=utf-8"};
 const std::string kAccept{"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"};

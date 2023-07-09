@@ -13,8 +13,8 @@ void Logger::CloseLogger() {
 }
 
 Logger& Logger::GetLogger() {
-    logger_ptr_ = new Logger();
-    return *logger_ptr_; 
+    static Logger instance = Logger();
+    return instance; 
 }
 
 // Либо делать второй аргумент с ссылкой на дескриптор файла, либо делать свитч в PrepareLog. Кажется, что решение со свитчем - не очень задумка
@@ -26,7 +26,7 @@ Logger& Logger::GetLogger() {
 void Logger::PrepareLog(const std::string& log_level) {
     log_file_ << std::endl << log_level << Helpers::GetDateAndTime();
 }
-
+Logger::Logger() : log_file_{"../logs/Log.txt"} {}
 std::ofstream& Logger::Info() {
     PrepareLog(kInfoLevel); 
     return log_file_;
@@ -43,10 +43,3 @@ std::ofstream& Logger::Error() {
     PrepareLog(kErrorLevel);
     return log_file_;
 }
-
-Logger::~Logger() {
-    std::cout << "~Logger()";
-    CloseLogger();
-    delete logger_ptr_;
-}
-

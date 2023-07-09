@@ -9,6 +9,9 @@
 #include <include/weather_forecast.hpp>
 #include <include/log.hpp>
 
+static auto& LOG = Logger::GetLogger();
+
+
 class HelloWorld: public Fastcgipp::Request<wchar_t>
 {
   private:

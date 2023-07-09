@@ -11,6 +11,9 @@
 #include <include/date.hpp>
 #include <iostream>
 
+auto& LOG = Logger::GetLogger();
+
+
 namespace Test{
 void TestDB () {
     soci::session sql_session(soci::postgresql, "dbname=weather");

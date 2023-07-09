@@ -29,15 +29,16 @@ class Logger {
     std::ofstream& Debug();
     std::ofstream& Warn();
     std::ofstream& Error();
-
   private:
-    
-    Logger(const Logger&) = delete;
-    Logger() = default;
-    ~Logger();
 
     std::ofstream log_file_{kLogFile};
     static Logger* logger_ptr_;
-    Logger& LOG = GetLogger();
-
+    
+    Logger(const Logger&) = delete;
+    Logger();
+    ~Logger() = default;
+    
 };
+
+// Logger* Logger::logger_ptr_ = nullptr;
+
