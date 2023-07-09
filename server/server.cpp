@@ -5,9 +5,9 @@
 
 #include <string>
 
-#include <src/db_working.cpp>
-#include <src/weather_forecast.cpp>
-
+#include <include/db_working.hpp>
+#include <include/weather_forecast.hpp>
+#include <include/log.hpp>
 
 class HelloWorld: public Fastcgipp::Request<wchar_t>
 {
@@ -20,16 +20,17 @@ class HelloWorld: public Fastcgipp::Request<wchar_t>
 
         out << L"Content-Type: text/plain; charset=utf-8\r\n\r\n";
 
-        weather::WeatherCast weather;
+        Weather::WeatherCast weather;
         const auto& weather_fetched = FetchOne(sql, "london");
 
-
+        std::cout << "prik";
         if (sql.got_data()) {
             LOG.Info() << "Today weather is already in DB";
             std::cout << "Today weather is already in DB" << std::endl;
             weather = weather_fetched;
         } else {
-            weather = weather::GetTodayWeatherForecast();
+            std::cout << "prik";
+            weather = Weather::GetTodayWeatherForecast();
             InsertWeather(weather.city, weather.date, weather.humidity, weather.weather_state, weather.wind_speed, weather.temperature, sql);
             LOG.Info() << "Successfuly put weather in DB";
             std::cout << "Successfuly put weather in DB" << std::endl;
