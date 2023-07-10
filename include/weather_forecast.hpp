@@ -26,6 +26,7 @@ struct WeatherCast {
     double wind_speed = 123;
     int humidity = 1;
 
+    operator std::string();
     friend std::ostream& operator<< (std::ostream& out, const WeatherCast& weather_cast);
     std::wstring GetWDate() const {return std::wstring(date.begin(), date.end());}
     std::wstring GetWCity() const {return std::wstring(city.begin(), city.end());}

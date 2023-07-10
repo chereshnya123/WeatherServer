@@ -33,8 +33,7 @@ Weather::WeatherCast FetchOne(soci::session& sql, const std::string city = "lond
     Weather::WeatherCast weather;
     sql << "SELECT date, humidity, state, wind_speed, temperature FROM " << city 
         << " WHERE date = '" << Helpers::GetTodayDate() << "';", soci::into(weather.date), soci::into(weather.humidity), soci::into(weather.weather_state), soci::into(weather.wind_speed), soci::into(weather.temperature);    
-    std::cout << "Successfuly fetched one record" << std::endl;
-    LOG.Info() << "Successfuly fetched one record";
+    LOG << "Successfuly fetched one record";
     
 
     return weather;
