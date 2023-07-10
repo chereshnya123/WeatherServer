@@ -1,5 +1,3 @@
-#pragma once
-
 #include <cpr/cpr.h>
 #include <cstdlib>
 #include <iostream>

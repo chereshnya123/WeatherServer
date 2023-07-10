@@ -1,5 +1,3 @@
-#pragma once
-
 #include <include/log.hpp>
 #include <include/date.hpp>
 

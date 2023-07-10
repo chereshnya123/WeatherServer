@@ -1,5 +1,3 @@
-#pragma once
-
 #include <include/db_working.hpp>
 
 #include <soci/session.h>
