@@ -1,5 +1,3 @@
-#pragma once
-
 #include <cpr/cpr.h>
 #include <cstdlib>
 #include <iostream>
@@ -72,38 +70,31 @@ std::optional<std::string> Weather::ParseValueFromHTML(const std::string& text, 
 }
 
 int Weather::ParseTemperature(const std::string& text) {
-    LOG.Info() << "Parsing temperature...\n";
-    std::cout << "Parsing temperature...\n";
+    LOG << "Parsing temperature...";
     //std::cout << "Searching IN: " << std::endl << text;
     const auto& parsed_temperature = Weather::ParseValueFromHTML(text, kCurrentTemperaturePattern);
 
     if (!parsed_temperature.has_value()) {
-        LOG.Error() << "ERROR: Can't parse temperature, return default: 100\n";
-        std::cout << "ERROR: Can't parse temperature, return default: 100\n";
+        LOG << "ERROR: Can't parse temperature, return default: 100";
         return 100;
     }
 
     const auto& temperature = std::stoi(parsed_temperature.value());
-    LOG.Info() << "Temperature parsed successfuly\n";
-    std::cout << "Temperature parsed successfuly\n";
+    LOG << "Temperature parsed successfuly";
     return temperature;
 }
 
 double Weather::ParseWindSpeed(const std::string& text) { // std::optional
 
-    std::cout << "Parsing wind speed";
-    LOG.Info() << "Parsing wind speed";
+    LOG << "Parsing wind speed";
     const auto& parsed_wind_speed = Weather::ParseValueFromHTML(text, kWindSpeedPattern);
 
     if (!parsed_wind_speed.has_value()) {
-        LOG.Error() << "ERROR: can't parse wind speed, return default: 0\n";
-        std::cout << "ERROR: can't parse wind speed, return default: 0\n";
-        return 0;
+        LOG << "ERROR: can't parse wind speed, return default: 0";
     }
 
     const auto& wind_speed = std::stod(parsed_wind_speed.value());
-    LOG.Info() << "Wind speed parsed successfuly\n";
-    std::cout << "Wind speed parsed successfuly\n";
+    LOG << "Wind speed parsed successfuly";
     return wind_speed;
 }
 
@@ -150,8 +141,7 @@ std::ostream&  operator<< (std::ostream& out, const Weather::WeatherCast& weathe
 Weather::WeatherCast Weather::ParseWeatherForecast(const std::string& text) {
     WeatherCast weather_forecast;
 
-    std::cout << "Parsing weather forecast...\n";
-    LOG.Info() << "Parsing weather forecast...\n";
+    LOG << "Parsing weather forecast...";
     weather_forecast.temperature = Weather::ParseTemperature(text);
     weather_forecast.city = "london";
     weather_forecast.wind_speed = Weather::ParseWindSpeed(text);
@@ -170,15 +160,22 @@ Weather::WeatherCast Weather::GetTodayWeatherForecast(std::string city) {
                       {"User-Agent", kUserAgent}});
     // r.status_code;                  // 200 Оформить в логи
     // r.header["content-type"];       // application/json; charset=utf-8
-    std::cout << "Got response" << std::endl;
-    LOG.Info() << "Got response\n" << std::endl;
-    std::cout << "size of txt = " << r.text.size() << std::endl;
+    LOG << "Got response";
     std::transform(city.begin(), city.end(), city.begin(), tolower);
     WeatherCast weather_forecast;
     weather_forecast = Weather::ParseWeatherForecast(r.text);
     weather_forecast.city = city;
     // WeatherCast weather_cast{city, "04.06.2023", today_temperature};
-    std::cout << "Returend weather" << std::endl;
-    LOG.Info() << "Returend weather" << std::endl;
+    LOG << "Returend weather";
     return weather_forecast;
+}
+
+Weather::WeatherCast::operator std::string() {
+    std::stringstream weather_forecast;
+    weather_forecast << "Weather Forecast : \n";
+    weather_forecast << "City: " << city << "\n";
+    weather_forecast << "Date: " << date << "\n";
+    weather_forecast << "Temp: " << temperature << std::endl;
+
+    return weather_forecast.str();
 }

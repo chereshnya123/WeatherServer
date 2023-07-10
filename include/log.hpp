@@ -20,19 +20,15 @@ const std::string& kErrorLevel{"[ERORR]"};
 
 class Logger {
   public:
-    
-    void CloseLogger();
 
     static Logger& GetLogger();
-    void PrepareLog(const std::string& log_level);
-    std::ofstream& Info();
-    std::ofstream& Debug();
-    std::ofstream& Warn();
-    std::ofstream& Error();
+    void PrepareLog(const std::string& log_level = "INFO");
+    Logger& operator<<(const std::string& msg);
+
+
   private:
 
     std::ofstream log_file_{kLogFile};
-    static Logger* logger_ptr_;
     
     Logger(const Logger&) = delete;
     Logger();

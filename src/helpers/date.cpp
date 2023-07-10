@@ -30,7 +30,6 @@ std::string Helpers::GetTodayDate() {
     date << MakeTwoDigits(local_tm.tm_mday) << ".";
     date << MakeTwoDigits(local_tm.tm_mon) << ".";
     date << local_tm.tm_year  + 1900;
-    std::cout << "Date: " << date.str();
     return date.str();
 }
 

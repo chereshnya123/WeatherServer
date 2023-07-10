@@ -18,7 +18,6 @@ class HelloWorld: public Fastcgipp::Request<wchar_t>
 
     bool response()
     {
-        std::cout << std::string(environment().requestUri.begin(),environment().requestUri.end())  << std::endl;
         soci::session sql(soci::postgresql, "dbname=weather");
 
         out << L"Content-Type: text/plain; charset=utf-8\r\n\r\n";
@@ -26,17 +25,13 @@ class HelloWorld: public Fastcgipp::Request<wchar_t>
         Weather::WeatherCast weather;
         const auto& weather_fetched = FetchOne(sql, "london");
 
-        std::cout << "prik";
         if (sql.got_data()) {
-            LOG.Info() << "Today weather is already in DB";
-            std::cout << "Today weather is already in DB" << std::endl;
+            LOG << "Today weather is already in DB";
             weather = weather_fetched;
         } else {
-            std::cout << "prik";
             weather = Weather::GetTodayWeatherForecast();
             InsertWeather(weather.city, weather.date, weather.humidity, weather.weather_state, weather.wind_speed, weather.temperature, sql);
-            LOG.Info() << "Successfuly put weather in DB";
-            std::cout << "Successfuly put weather in DB" << std::endl;
+            LOG << "Successfuly put weather in DB";
         }
 
         out << "Today weather in " << weather.GetWCity() <<  "\n";
@@ -55,12 +50,9 @@ int main()
 {
     Fastcgipp::Manager<HelloWorld> manager;
 
-
-
     manager.setupSignals();
     manager.listen("127.0.0.1", "9001");
     manager.start();
-
 
 
     manager.join();
