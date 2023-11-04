@@ -1,12 +1,13 @@
 #pragma once
 
+#include <include/date.hpp>
+
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <chrono>
 
 
-namespace Helpers {
 
 namespace {
     std::string MakeTwoDigits(int day) {
@@ -19,7 +20,7 @@ namespace {
 
 // Да-да, здесь дублируется код. Потом исправлю
 
-std::string GetTodayDate() {
+std::string Helpers::GetTodayDate() {
 
     auto now = std::chrono::system_clock::now();
     std::time_t end_time = std::chrono::system_clock::to_time_t(now);
@@ -28,11 +29,10 @@ std::string GetTodayDate() {
     date << MakeTwoDigits(local_tm.tm_mday) << ".";
     date << MakeTwoDigits(local_tm.tm_mon) << ".";
     date << local_tm.tm_year  + 1900;
-    std::cout << "Date: " << date.str();
     return date.str();
 }
 
-std::string GetDateAndTime() {
+std::string Helpers::GetDateAndTime() {
 
     auto now = std::chrono::system_clock::now();
     std::time_t end_time = std::chrono::system_clock::to_time_t(now);
@@ -45,6 +45,4 @@ std::string GetDateAndTime() {
     date_and_time << MakeTwoDigits(local_tm.tm_mon) << "/";
     date_and_time << local_tm.tm_year  + 1900 << "]";
     return date_and_time.str();
-}
-
 }

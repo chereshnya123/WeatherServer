@@ -1,10 +1,9 @@
-#pragma once
-
 #include <cpr/cpr.h>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
 #include <chrono>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <optional>
@@ -13,15 +12,20 @@
 #include <src/helpers/date.cpp>
 #include <logging/log.cpp>
 
+#include <include/log.hpp>
+#include <include/weather_forecast.hpp>
+#include <include/date.hpp>
 // To-Parse list:
 // temp ------------------- OK
 // weather state  // Parse HTML with gumbo
 // humidity ----------------- OK
 // wind_speed --------------------- OK
 
-namespace weather {
+static auto& LOG = Logger::GetLogger();
 
 namespace {
+
+
 
 const std::string kContentType{"text/html; charset=utf-8"};
 const std::string kAccept{"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"};
@@ -36,11 +40,15 @@ const std::string kSnowy{"Snowy"};
 const std::string kDull{"Dull"};
 
 constexpr int kValueSize = 15;
+}
 
 
-
-int GetIndexOfFirstNumber(const std::string& text, const int begin, const int end) {
+int Weather::GetIndexOfFirstNumber(const std::string& text, const int begin, const int end) {
+    std::cout << "left = " << begin << " right = " << end << std::endl;
+    std::cout << "Searching in: " << std::endl << text << std::endl;
     for (int i = begin; i < end; ++i) {
+        std::cout << "Cycled\n";
+        std::cout << text[i];
         if (text[i] == '-' || isdigit(text[i]))
             return i;
     }
@@ -48,10 +56,10 @@ int GetIndexOfFirstNumber(const std::string& text, const int begin, const int en
     return -1;
 }
 
-std::optional<std::string> ParseValueFromHTML(const std::string& text, const std::string& tag) {
+std::optional<std::string> Weather::ParseValueFromHTML(const std::string& text, const std::string& tag) {
     int left = text.find(tag) + tag.size() + 1;
     int right = left + kValueSize;
-    left = GetIndexOfFirstNumber(text, left, right);
+    left = Weather::GetIndexOfFirstNumber(text, left, right);
     for ( int i = left; i < right; ++i) {
         if (!std::isdigit(text[i])) {
             right = i;
@@ -62,43 +70,37 @@ std::optional<std::string> ParseValueFromHTML(const std::string& text, const std
     return std::nullopt;
 }
 
-int ParseTemperature(const std::string& text) {
-    LOG.Info() << "Parsing temperature...\n";
-    std::cout << "Parsing temperature...\n";
-    const auto& parsed_temperature = ParseValueFromHTML(text, kCurrentTemperaturePattern);
+int Weather::ParseTemperature(const std::string& text) {
+    LOG << "Parsing temperature...";
+    //std::cout << "Searching IN: " << std::endl << text;
+    const auto& parsed_temperature = Weather::ParseValueFromHTML(text, kCurrentTemperaturePattern);
 
     if (!parsed_temperature.has_value()) {
-        LOG.Error() << "ERROR: Can't parse temperature, return default: 100\n";
-        std::cout << "ERROR: Can't parse temperature, return default: 100\n";
+        LOG << "ERROR: Can't parse temperature, return default: 100";
         return 100;
     }
 
     const auto& temperature = std::stoi(parsed_temperature.value());
-    LOG.Info() << "Temperature parsed successfuly\n";
-    std::cout << "Temperature parsed successfuly\n";
+    LOG << "Temperature parsed successfuly";
     return temperature;
 }
 
-double ParseWindSpeed(const std::string& text) { // std::optional
+double Weather::ParseWindSpeed(const std::string& text) { // std::optional
 
-    std::cout << "Parsing wind speed";
-    LOG.Info() << "Parsing wind speed";
-    const auto& parsed_wind_speed = ParseValueFromHTML(text, kWindSpeedPattern);
+    LOG << "Parsing wind speed";
+    const auto& parsed_wind_speed = Weather::ParseValueFromHTML(text, kWindSpeedPattern);
 
     if (!parsed_wind_speed.has_value()) {
-        LOG.Error() << "ERROR: can't parse wind speed, return default: 0\n";
-        std::cout << "ERROR: can't parse wind speed, return default: 0\n";
-        return 0;
+        LOG << "ERROR: can't parse wind speed, return default: 0";
     }
 
     const auto& wind_speed = std::stod(parsed_wind_speed.value());
-    LOG.Info() << "Wind speed parsed successfuly\n";
-    std::cout << "Wind speed parsed successfuly\n";
+    LOG << "Wind speed parsed successfuly";
     return wind_speed;
 }
 
-std::string ParseWeatherState (const std::string& text) {
-    const auto& parsed_weather_state = ParseValueFromHTML(text, kWindSpeedPattern);
+std::string Weather::ParseWeatherState (const std::string& text) {
+    const auto& parsed_weather_state = Weather::ParseValueFromHTML(text, kWindSpeedPattern);
 
     if (!parsed_weather_state.has_value()) {
         throw "Can't parse Weather state";
@@ -109,8 +111,8 @@ std::string ParseWeatherState (const std::string& text) {
     return weather_state;
 }
 
-int ParseHumidity (const std::string& text) {
-    const auto& parsed_humidity = ParseValueFromHTML(text, kWindSpeedPattern);
+int Weather::ParseHumidity (const std::string& text) {
+    const auto& parsed_humidity = Weather::ParseValueFromHTML(text, kWindSpeedPattern);
 
     if (!parsed_humidity.has_value()) {
         throw "Can't parse Weather state";
@@ -121,26 +123,12 @@ int ParseHumidity (const std::string& text) {
     return humidity;
 }
 
-} // namespace
-
 
 // Req: Добавить кэш страниц, чтобы не ждать, пока скачается страница, которая у меня уже есть
 // Response: Сделано с помощью БД
 
-struct WeatherCast {
-    std::string city = "london";
-    std::string date = "now";
-    int temperature = 123;
-    int weather_state = 1;
-    double wind_speed = 123;
-    int humidity = 1;
 
-
-    std::wstring GetWDate() const {return std::wstring(date.begin(), date.end());}
-    std::wstring GetWCity() const {return std::wstring(city.begin(), city.end());}
-};
-
-std::ostream&  operator<< (std::ostream& out, const WeatherCast& weather_cast) {
+std::ostream&  operator<< (std::ostream& out, const Weather::WeatherCast& weather_cast) {
         out << "Weather forecast:" << std::endl;
         out << "City: " << weather_cast.city << std::endl;
         out << "Date: " << weather_cast.date << std::endl;
@@ -151,14 +139,13 @@ std::ostream&  operator<< (std::ostream& out, const WeatherCast& weather_cast) {
 
 
 
-WeatherCast ParseWeatherForecast(const std::string& text) {
+Weather::WeatherCast Weather::ParseWeatherForecast(const std::string& text) {
     WeatherCast weather_forecast;
 
-    std::cout << "Parsing weather forecast...\n";
-    LOG.Info() << "Parsing weather forecast...\n";
-    weather_forecast.temperature = ParseTemperature(text);
+    LOG << "Parsing weather forecast...";
+    weather_forecast.temperature = Weather::ParseTemperature(text);
     weather_forecast.city = "london";
-    weather_forecast.wind_speed = ParseWindSpeed(text);
+    weather_forecast.wind_speed = Weather::ParseWindSpeed(text);
     weather_forecast.humidity = 56; // Заглушка 
 
     weather_forecast.date = Helpers::GetTodayDate();
@@ -166,24 +153,30 @@ WeatherCast ParseWeatherForecast(const std::string& text) {
     return weather_forecast;
 }
 
-WeatherCast GetTodayWeatherForecast(std::string city = "london") {
+Weather::WeatherCast Weather::GetTodayWeatherForecast(std::string city) {
+
     cpr::Response r = cpr::Get(cpr::Url{"https://yandex.ru/pogoda/" + city},
                       cpr::Parameters{{"Content-Type", kContentType}, {"Accept", kAccept},
                       {"Accept-Encoding", "identity"},
                       {"User-Agent", kUserAgent}});
     // r.status_code;                  // 200 Оформить в логи
     // r.header["content-type"];       // application/json; charset=utf-8
-    std::cout << "Got response" << std::endl;
-    LOG.Info() << "Got response" << std::endl;
+    LOG << "Got response";
     std::transform(city.begin(), city.end(), city.begin(), tolower);
     WeatherCast weather_forecast;
-
-    weather_forecast = ParseWeatherForecast(r.text);
+    weather_forecast = Weather::ParseWeatherForecast(r.text);
     weather_forecast.city = city;
     // WeatherCast weather_cast{city, "04.06.2023", today_temperature};
-    std::cout << "Returend weather" << std::endl;
-    LOG.Info() << "Returend weather" << std::endl;
+    LOG << "Returend weather";
     return weather_forecast;
 }
 
-} //namespace weather
+Weather::WeatherCast::operator std::string() {
+    std::stringstream weather_forecast;
+    weather_forecast << "Weather Forecast : \n";
+    weather_forecast << "City: " << city << "\n";
+    weather_forecast << "Date: " << date << "\n";
+    weather_forecast << "Temp: " << temperature << std::endl;
+
+    return weather_forecast.str();
+}
