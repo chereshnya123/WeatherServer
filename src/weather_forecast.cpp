@@ -9,7 +9,8 @@
 #include <optional>
 #include <sstream>
 
-// #include <gumbo.h>
+#include <src/helpers/date.cpp>
+#include <logging/log.cpp>
 
 #include <include/log.hpp>
 #include <include/weather_forecast.hpp>
