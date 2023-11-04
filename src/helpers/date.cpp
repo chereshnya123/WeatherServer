@@ -10,11 +10,10 @@ namespace Helpers {
 
 namespace {
     std::string MakeTwoDigits(int day) {
-        ++day;
+        std::string ans{};
         if (day < 10)
-            return "0" + std::to_string(day);
-        else 
-            return std::to_string(day);
+            ans += "0";
+        return ans + std::to_string(day);
     }
 }
 

@@ -17,3 +17,7 @@ target_link_libraries(weather_server
     SOCI::soci_core
     SOCI::soci_postgresql
 )
+
+enable_testing()
+add_executable(tester tester.cpp)
+add_test(simple_test tester)

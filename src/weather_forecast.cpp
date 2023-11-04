@@ -10,8 +10,6 @@
 #include <optional>
 #include <sstream>
 
-#include <gumbo.h>
-
 #include <src/helpers/date.cpp>
 #include <logging/log.cpp>
 
