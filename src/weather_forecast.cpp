@@ -5,12 +5,10 @@
 #include <iostream>
 #include <algorithm>
 #include <chrono>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <optional>
-#include <sstream>
-
-#include <gumbo.h>
 
 #include <src/helpers/date.cpp>
 #include <logging/log.cpp>
@@ -27,7 +25,7 @@ namespace {
 
 const std::string kContentType{"text/html; charset=utf-8"};
 const std::string kAccept{"text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9"};
-const std::string kUserAgent{"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.193 Safari/537.36"};
+const std::string kUserAgent{"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 YaBrowser/23.7.5.685 (beta) Yowser/2.5 Safari/537.36"};
 const std::string kFactTemperatureClass{"temp__value temp__value_with-unit"};
 const std::string kCurrentTemperaturePattern{"Текущая температура"};
 const std::string kWindSpeedPattern{">Ветер:"};
@@ -46,6 +44,20 @@ int GetIndexOfFirstNumber(const std::string& text, const int begin, const int en
         if (text[i] == '-' || isdigit(text[i]))
             return i;
     }
+    std::cout << text << std::endl;
+    throw -1;
+    return -1;
+}
+
+int GetIndexAfterTag (const std::string& text, const int begin, const int end) {
+    for (int i = begin; i < end; ++i) {
+        if (isdigit(text[i])) {
+            return i;
+        }
+            
+    }
+    std::cout << text << std::endl;
+
     throw -1;
     return -1;
 }
@@ -169,17 +181,17 @@ WeatherCast ParseWeatherForecast(const std::string& text) {
 }
 
 WeatherCast GetTodayWeatherForecast(std::string city = "london") {
-    cpr::Response r = cpr::Get(cpr::Url{"https://yandex.ru/pogoda/" + city},
+    std::cout << "In func\n";
+    cpr::Response r{cpr::Get(cpr::Url{"https://yandex.ru/pogoda/" + city}, cpr::VerifySsl{false},
                       cpr::Parameters{{"Content-Type", kContentType}, {"Accept", kAccept},
                       {"Accept-Encoding", "identity"},
-                      {"User-Agent", kUserAgent}});
+                      {"User-Agent", kUserAgent}})};
     // r.status_code;                  // 200 Оформить в логи
     // r.header["content-type"];       // application/json; charset=utf-8
-    std::cout << "Got response" << std::endl;
-    LOG.Info() << "Got response" << std::endl;
+    std::cout << "Got response" << std::endl << r.error.message << static_cast<int>(r.error.code);
     std::transform(city.begin(), city.end(), city.begin(), tolower);
     WeatherCast weather_forecast;
-
+    std::cout << r.text << std::endl << r.status_code << std::endl;
     weather_forecast = ParseWeatherForecast(r.text);
     weather_forecast.city = city;
     // WeatherCast weather_cast{city, "04.06.2023", today_temperature};
